@@ -1,43 +1,23 @@
-import { defineConfig, Plugin } from "vite";
+// vite.config.ts
+import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { createServer } from "./server";
 
-// https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
-  server: {
-    host: "::",
-    port: 8080,
-    fs: {
-      // Allow Vite to serve files from the client and shared folders and the
-      // repository root (so `index.html` at the project root is within the
-      // allowed filesystem list). Keep sensitive paths in `deny` to avoid
-      // exposing secrets or server source files via the dev server.
-      allow: [path.resolve(__dirname, "./client"), path.resolve(__dirname, "./shared"), path.resolve(__dirname)],
-      deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "server/**"],
-    },
-  },
+// Pure SPA config, no Express server injected
+export default defineConfig({
+  plugins: [react()],
   build: {
+    // Vercel will serve this folder
     outDir: "dist/spa",
   },
-  plugins: [react(), expressPlugin()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./client"),
       "@shared": path.resolve(__dirname, "./shared"),
     },
   },
-}));
-
-function expressPlugin(): Plugin {
-  return {
-    name: "express-plugin",
-    apply: "serve", // Only apply during development (serve mode)
-    configureServer(server) {
-      const app = createServer();
-
-      // Add Express app as middleware to Vite dev server
-      server.middlewares.use(app);
-    },
-  };
-}
+  server: {
+    host: "::",
+    port: 8080,
+  },
+});
