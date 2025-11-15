@@ -1,14 +1,10 @@
 {
-  "builds": [
+  "buildCommand": "pnpm install --no-frozen-lockfile && pnpm build",
+  "outputDirectory": "dist/spa",
+  "rewrites": [
     {
-      "src": "dist/spa/**",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/dist/spa/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
